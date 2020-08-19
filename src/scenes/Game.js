@@ -7,6 +7,7 @@ import { accelerate, decelerate } from "../utils";
 
 let box;
 let cursors;
+let scoreText;
 
 export default new Phaser.Class({
   Extends: Phaser.Scene,
@@ -26,6 +27,7 @@ export default new Phaser.Class({
   },
   create: function create() {
     this.add.image(400, 300, "background");
+    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
     const stars = this.physics.add.group({
       key: 'star',
@@ -76,8 +78,8 @@ export default new Phaser.Class({
     }
 
     if (cursors.up.isDown) box.setVelocityY(accelerate(velocity.y, -1));
-    if (cursors.right.isDown) box.setVelocityX(accelerate(velocity.x, 1));
+    // if (cursors.right.isDown) box.setVelocityX(accelerate(velocity.x, 1));
     if (cursors.down.isDown) box.setVelocityY(accelerate(velocity.y, 1));
-    if (cursors.left.isDown) box.setVelocityX(accelerate(velocity.x, -1));
+    // if (cursors.left.isDown) box.setVelocityX(accelerate(velocity.x, -1));
   }
 });
