@@ -1,3 +1,14 @@
+
+
+export const gameOptions = {
+  fallSpeed: 800,
+  jumpBurst: 300,
+  localStorageBestScore: "BestScorePhaseJS",
+}
+
+// WILL LIKELY DELETE BELOW METHODS / VARIABLES
+//==============================================
+
 const ACCELERATION = 10;
 const MAX_SPEED = 300;
 
@@ -13,7 +24,6 @@ export function decelerate(oldValue) {
     return polarity * newVal;
   }
 }
-
 export function accelerate(oldValue, direction) {
   const newValue = oldValue + (direction * ACCELERATION);
   const limitFunc = direction < 0 ? Math.min : Math.min;
