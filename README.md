@@ -37,3 +37,4 @@ This starter template is meant to be a kickoff spot for a full-fledged PhaserJS 
 
 pokeball image credit: https://toppng.com/okeball-8-bit-pokeball-PNG-free-PNG-Images_243603
 background image credit: https://mocah.org/4525960-digital-art-pixel-art-pixels-pixelated-nature-landscape-water-clouds-sky-horizon-simple.html
+pidgey images credit: https://www.cs.uic.edu/~jrobles/secret.html
