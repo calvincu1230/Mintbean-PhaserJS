@@ -1,85 +1,160 @@
 import Phaser from "phaser";
-import mp3 from "../assets/Orbital\ Colossus.mp3";
-import background from "../assets/scifi_platform_BG1.jpg";
-import tiles from "../assets/scifi_platformTiles_32x32.png";
-import star from "../assets/star.png"
-import { accelerate, decelerate } from "../utils";
+// import mp3 from "../assets/Orbital\ Colossus.mp3"; 
+import background from "../assets/background.png";
+import pidgey from "../assets/pidgey.gif";
+import pokeball from "../assets/pokeball.png"
+import { gameOptions } from "../utils";
 
-let box;
-let cursors;
+let player;
 let scoreText;
+let score = 0;
+let bestScore = localStorage.getItem(gameOptions.localStorageBestScore) === null ? 0 : localStorage.getItem(gameOptions.localStorageBestScore);
+let bestScoreText;
+let obstacles;
+let counter = 0;
 
 export default new Phaser.Class({
   Extends: Phaser.Scene,
   initialize: function () {
     Phaser.Scene.call(this, { key: 'game' });
-    window.GAME = this;
   },
   preload: function preload() {
     this.load.image("background", background);
 
-    this.load.spritesheet('tiles', tiles, {
-      frameWidth: 32,
-      frameHeight: 32
+    this.load.spritesheet('pidgey', pidgey, {
+      frameWidth: 75,
+      frameHeight: 75
     });
 
-    this.load.image("star", star);
+    this.load.image("pokeball", pokeball); // CHANGE when new image is used
   },
   create: function create() {
-    this.add.image(400, 300, "background");
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    const { height, width } = this.game.canvas;
 
-    const stars = this.physics.add.group({
-      key: 'star',
-      repeat: 11,
-      setScale: {x: 0.2, y: 0.2 },
-      setXY: { x:400, y: 300 }
-    });
+    // sets background image as a sprite with start pos (mid) and size, allowing it to be scrolled
+    this.background = this.add.tileSprite(width / 2, height / 2, width, height, "background");
 
-    stars.children.iterate(function (child) {
-      child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-      child.setVelocityX(150 - Math.random() * 300);
-      child.setVelocityY(150 - Math.random() * 300);
-      child.setBounce(1, 1);
-      child.setCollideWorldBounds(true);
-    });
+    // sets text on screen to provide a constant score  update
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '28px', fill: '#000' });
+    bestScoreText = this.add.text(16, 40, ` Best: ${ bestScore }`, { fontSize: '28px', fill: '#000' });
 
-    cursors = this.input.keyboard.createCursorKeys();
+    // adds spacebar to var, allowing listener/event to be attached
+    this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    box = this.physics.add.image(400, 100, "tiles", 15);
+    // player will jump when pressed
+    this.spacebar.on('down', this.jump, this);
 
-    const processCollision = (box, star) => {
-      star.destroy();
-      const starsLeft = stars.countActive();
-      if (starsLeft === 0) {
-        this.scene.start('winscreen');
-      }
-    }
+    // need to change this, as it creates all at once and I need to add initial individually for dif positions
+    obstacles = this.physics.add.group(); 
 
-    this.physics.add.collider(
-      stars,
-      box,
-      processCollision,
-      null,
-      this
-    );
+    // will be positions in gameOptions arrays for difficulty
+    this.spawnTimerPos = 0;
+    this.objSpeedPos = 0;
 
+    // array used for tracking current obstacles
+    // this.obstacleArray = [];
+ 
+    // build initial obstacles
+    this.createObstacles();
 
-    box.setBounce(1, 1);
-    box.setCollideWorldBounds(true);
+    // sets obstacles speed to simulate player movement
+    obstacles.setVelocityX(-gameOptions.objSpeeds[this.objSpeedPos]);
+    
+    // obstacles.children.iterate(function (child) { // does not work yet, will need to use as template for individual generation
+    //   child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    //   child.setVelocityX(-(gameOptions.playerSpeed));
+    //   child.setVelocityY(-Math.random() * 300);
+    // });
+    
+    // draws players sprite
+    player = this.physics.add.sprite(200, 100, "pidgey");
+    player.body.gravity.y = gameOptions.fallSpeed; // sets gravity for player to fall at
   },
+  
   update: function () {
-    const { velocity } = box.body;
+    debugger;
+    const spawnTimer = gameOptions.objSpawnTimers[this.spawnTimerPos];
 
-    if (cursors.space.isDown) {
-      const x = decelerate(velocity.x);
-      const y = decelerate(velocity.y);
-      box.setVelocity(x, y)
+    // scrolls background sprite
+    this.background.tilePositionX += 2;
+
+    // tracks frames for score increases
+    counter++;
+
+    // checks if a new difficulty threshold was met
+    this.increaseDifficulty();
+
+    // if player hits an obstacle, triggers gameOver
+    this.physics.world.collide(player, obstacles, function () {
+      this.gameOver();
+    }, null, this);
+
+    // if player leaves top or bottom bounds they die
+    if (player.y > this.game.canvas.height || player.y < 0) { 
+      // may want to put a lose animation
+      this.gameOver();
     }
 
-    if (cursors.up.isDown) box.setVelocityY(accelerate(velocity.y, -1));
-    // if (cursors.right.isDown) box.setVelocityX(accelerate(velocity.x, 1));
-    if (cursors.down.isDown) box.setVelocityY(accelerate(velocity.y, 1));
-    // if (cursors.left.isDown) box.setVelocityX(accelerate(velocity.x, -1));
+    // iterates objects for rotation and checks if they should be deleted
+    obstacles.getChildren().forEach(obstacle => {
+      obstacle.rotation += 0.02;
+      if (obstacle.y > this.game.canvas.height + 100|| obstacle.y < -100) {
+        // obstacle is out of bounds so destroy it
+        obstacle.destroy();
+      }
+    })
+
+    if (counter % 20 === 0) { // updates score every 20 renders of gameplay
+      score += 10;
+      if (score > bestScore) {
+        bestScore = score;
+        bestScoreText.setText(' Best: ' + bestScore);
+      }
+      scoreText.setText('Score: ' + score);
+    }
+
+    if (counter === spawnTimer) { // will be used to control spawns of new obstacles
+      counter = 0;
+      this.createObstacles();
+    }
+  },
+
+  gameOver() {
+    localStorage.setItem(gameOptions.localStorageName, Math.max(this.score, this.topScore));
+    score = 0;
+    this.scene.start('overscreen');
+  },
+
+  jump() {
+    player.body.velocity.y = -gameOptions.jumpBurst;
+  },
+
+  createObstacles() {
+    const { height, width } = this.game.canvas;
+    const obstacleSpeed = gameOptions.objSpeeds[this.objSpeedPos];
+    // this.obstacleArray.push(
+    obstacles.create(width, 0, 'pokeball')
+      .setBounce(1, 1)
+      .setVelocityY(obstacleSpeed);
+
+    // this.obstacleArray.push(
+    obstacles.create(width, height, 'pokeball')
+      .setBounce(1, 1)
+      .setVelocityY(-obstacleSpeed);
+
+    obstacles.setVelocityX(-obstacleSpeed);
+  },
+
+  increaseDifficulty() {
+    if (this.spawnTimerPos > 2) {
+      this.objSpeedPos = 1;
+      return;
+    } else if (score >= 200 && score < 400) {
+      this.spawnTimerPos = 1;
+    } else if (score >= 400 && score < 600) {
+      this.spawnTimerPos = 2;
+    } else if (score >= 600 && score < 800) {
+      this.spawnTimerPos = 3;
+    }
   }
 });
