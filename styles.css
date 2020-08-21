@@ -1,0 +1,11 @@
+html{
+  color: white;
+  background: grey;
+  padding-left: 25%;
+}
+
+.intro-text{
+  padding: 0 10px 10px 10px;
+  text-align: center;
+  width: 800px;
+}
