@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import background from "../assets/background.png";
-import pidgey from "../assets/pidgey.gif";
-import pokeball from "../assets/pokeball.png"
+import background from "../../src/assets/background.png";
+import pidgey from "../../src/assets/pidgey.gif";
+import pokeball from "../../src/assets/pokeball.png"
 import { gameOptions } from "../utils";
 
 let player;
