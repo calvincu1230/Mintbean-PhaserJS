@@ -1,14 +1,13 @@
 {
-    "name": "mintbean-phaserjs-template",
+    "name": "pidgey-escape",
     "version": "1.0.0",
-    "description": "Mintbean's template for PhaserJS games.",
+    "description": "Help Pidgey avoid Pokeballs!",
     "main": "index.js",
-    "author": "monarch@mintbean.io",
+    "author": "calvincu1230",
     "license": "MIT",
-    "private": true,
     "scripts": {
-        "start": "parcel src/index.html",
-        "build": "parcel build src/index.html"
+        "start": "parcel index.html",
+        "build": "parcel build index.html"
     },
     "dependencies": {
         "phaser": "3.24.1"

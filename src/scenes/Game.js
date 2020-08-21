@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-// import mp3 from "../assets/Orbital\ Colossus.mp3"; 
 import background from "../assets/background.png";
 import pidgey from "../assets/pidgey.gif";
 import pokeball from "../assets/pokeball.png"
@@ -113,7 +112,7 @@ export default new Phaser.Class({
       scoreText.setText('Score: ' + score);
     }
 
-    if (counter === spawnTimer) { // will be used to control spawns of new obstacles
+    if (counter >= spawnTimer) { // will be used to control spawns of new obstacles
       counter = 0;
       this.createObstacles();
     }
@@ -135,12 +134,12 @@ export default new Phaser.Class({
     // this.obstacleArray.push(
     obstacles.create(width, 0, 'pokeball')
       .setBounce(1, 1)
-      .setVelocityY(obstacleSpeed);
+      .setVelocityY(this.genRandNum());
 
     // this.obstacleArray.push(
     obstacles.create(width, height, 'pokeball')
       .setBounce(1, 1)
-      .setVelocityY(-obstacleSpeed);
+      .setVelocityY(-this.genRandNum());
 
     obstacles.setVelocityX(-obstacleSpeed);
   },
@@ -148,6 +147,7 @@ export default new Phaser.Class({
   increaseDifficulty() {
     if (this.spawnTimerPos > 2) {
       this.objSpeedPos = 1;
+      if (score > 900) this.objSpeedPos = 2;
       return;
     } else if (score >= 200 && score < 400) {
       this.spawnTimerPos = 1;
@@ -156,5 +156,9 @@ export default new Phaser.Class({
     } else if (score >= 600 && score < 800) {
       this.spawnTimerPos = 3;
     }
+  },
+
+  genRandNum(){
+    return 100 + Math.random() * 200; 
   }
 });

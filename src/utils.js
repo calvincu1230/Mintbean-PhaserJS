@@ -3,5 +3,5 @@ export const gameOptions = {
   jumpBurst: 300,
   localStorageBestScore: "BestScorePhaseJS",
   objSpawnTimers: [150, 100, 50, 25],
-  objSpeeds: [150, 250]
+  objSpeeds: [200, 225, 250]
 }
