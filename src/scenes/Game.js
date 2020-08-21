@@ -49,9 +49,6 @@ export default new Phaser.Class({
     // will be positions in gameOptions arrays for difficulty
     this.spawnTimerPos = 0;
     this.objSpeedPos = 0;
-
-    // array used for tracking current obstacles
-    // this.obstacleArray = [];
  
     // build initial obstacles
     this.createObstacles();
@@ -59,19 +56,12 @@ export default new Phaser.Class({
     // sets obstacles speed to simulate player movement
     obstacles.setVelocityX(-gameOptions.objSpeeds[this.objSpeedPos]);
     
-    // obstacles.children.iterate(function (child) { // does not work yet, will need to use as template for individual generation
-    //   child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    //   child.setVelocityX(-(gameOptions.playerSpeed));
-    //   child.setVelocityY(-Math.random() * 300);
-    // });
-    
     // draws players sprite
     player = this.physics.add.sprite(200, 100, "pidgey");
     player.body.gravity.y = gameOptions.fallSpeed; // sets gravity for player to fall at
   },
   
   update: function () {
-    debugger;
     const spawnTimer = gameOptions.objSpawnTimers[this.spawnTimerPos];
 
     // scrolls background sprite
