@@ -15,9 +15,8 @@ export default new Phaser.Class({
     graphics.fillStyle(0x000000, 1);
     graphics.fillRect(0, 0, 800, 600);
 
-    this.add.text(225, 300, "Press space to start.")
-    this.add.text(225, 320, "Press spacebar to fly up.")
-    this.add.text(225, 340, "Avoid getting caught by a Pokeball!")
+    this.add.text(200, 100, "Pidgey Escape", { fontSize: '50px' })
+    this.add.text(200, 450, "Press space to start", { fontSize: "30px" });
   },
   update: function () {
 

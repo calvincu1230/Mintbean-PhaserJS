@@ -110,8 +110,8 @@ export default new Phaser.Class({
 
   gameOver() {
     localStorage.setItem(gameOptions.localStorageName, Math.max(this.score, this.topScore));
+    this.scene.start('overscreen', { score });
     score = 0;
-    this.scene.start('overscreen');
   },
 
   jump() {
