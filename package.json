@@ -2,7 +2,7 @@
     "name": "pidgey-escape",
     "version": "1.0.0",
     "description": "Help Pidgey avoid Pokeballs!",
-    "main": "./src/index.js",
+    "main": "src/index.html",
     "author": "calvincu1230",
     "license": "MIT",
     "scripts": {
