@@ -33,7 +33,7 @@ module.exports = {
               // you can specify a publicPath here
               // by default it uses publicPath in webpackOptions.output
               name: "[name].[ext]",
-              outputPath: "assets/",
+              outputPath: "src/assets/",
               publicPath: "src/assets/",
             },
           },
